@@ -11,14 +11,13 @@
 ** functions
 | name | description                                    |
 |------+------------------------------------------------|
-| atw  | applies a function where a mask succeeds       |
 | rnk  | determines the rank of a function              |
+| proj | dynamically constructs a projection            |
 | enqf | enqueues a function to the front of a function |
 | enqb | enqueues a function to the back of a function  |
 | empf | emplaces a function to the front of a function |
 | empb | emplaces a function to the back of a function  |
 | ...  |                                                |
-* examples
 ...
 * pitfalls
 ...
