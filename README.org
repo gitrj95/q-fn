@@ -1,0 +1,24 @@
+#+title:q-fn
+#+author:rj
+
+/IN PROGRESS, UNSTABLE/
+* motivation
+- repeated idioms
+- higher-order function tooling
+- ...
+* interface
+** configuration
+** functions
+| name | description                                    |
+|------+------------------------------------------------|
+| rnk  | determines the rank of a function              |
+| enqf | enqueues a function to the front of a function |
+| enqb | enqueues a function to the back of a function  |
+| empf | emplaces a function to the front of a function |
+| empb | emplaces a function to the back of a function  |
+| mwh  | applies a function where a mask succeeds       |
+| ...  |                                                |
+* examples
+...
+* pitfalls
+...
