@@ -12,5 +12,5 @@ proj:{x .@[rnk[x]#pt;z;:;y]}
 enqf:enq 1b;enqb:enq 0b
 empf:emp 1b;empb:enq 0b
 td:{enqf[enlist]{if[~y~ty z;`'type];x . z}[x;y]};tdws:{td[x;ty y]}
-ts:{tz:ty z;while[~tz~*y;x_:0;y_:0];(*x). z}
+ts:{tz:ty z;while[~(#y)&z~*y;x_:0;y_:0];(*x). z}
 tswf:{(x@&y~\:ty z).\: z}
