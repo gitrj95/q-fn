@@ -9,18 +9,20 @@
 * interface
 ** configuration
 ** functions
-| name | description                                        |
-|------+----------------------------------------------------|
-| rnk  | determines the rank of a function                  |
-| proj | dynamically constructs a projection                |
-| enqf | enqueues a function to the front of a function     |
-| enqb | enqueues a function to the back of a function      |
-| empf | emplaces a function to the front of a function     |
-| empb | emplaces a function to the back of a function      |
-| td   | a typed function declaration                       |
-| tdws | a typed function declaration derived from a sample |
-| ts   | type switch                                        |
-| tswf | type switch with fallthrough                       |
+| name   | description                                     |
+|--------+-------------------------------------------------|
+| rnk    | determines the rank of a function               |
+| proj   | dynamically constructs a projection             |
+| projwr | dynamically constructs a projection with a rank |
+| enqf   | enqueues a function to the front of a function  |
+| enqb   | enqueues a function to the back of a function   |
+| empf   | emplaces a function to the front of a function  |
+| empb   | emplaces a function to the back of a function   |
+| td     | a typed function declaration                    |
+| tdws   | a typed function declaration with a sample      |
+| ts     | type switch                                     |
+| tswf   | type switch with fallthrough                    |
 ...
 * pitfalls
+absurd complexity of determining arity through reflection in q -> slow
 ...
