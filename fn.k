@@ -1,5 +1,4 @@
 \d .fn
-
 pt:(.{}[;])1
 
 enq:{[f;x;y]if[1b in 1<rnk'(x;y);'`type];$[f;y x@;y x@]}
