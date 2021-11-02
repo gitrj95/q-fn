@@ -1,7 +1,7 @@
 \d .fn
 pt:(.{}[;])1;rnkp:()
 
-enq:{[f;x;y]if[1b in 1<rnk'(x;y);'`type];$[f;y x@;y x@]}
+enq:{[f;x;y]if[1b in 1<rnk'(x;y);'`type];$[f;y x@;x y@]}
 emp:{[f;x;y]if[~-11=@x;'`type];if[-11=@y;y:. y];fx:. x;.[x;();:;enq[f;fx;y]]}
 ty:{$[@x;@x;.z.s'x]}
 
