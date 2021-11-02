@@ -21,10 +21,10 @@
 | rnk    | determines the rank (arity) of a function given a function                                                    |
 | proj   | constructs a projection given a function, indices, and arguments                                              |
 | projwr | constructs a projection given a function, its rank, indices, and arguments                                    |
-| enqf   | enqueues a function to the front of a function given a destination and source                                 |
-| enqb   | enqueues a function to the back of a function given a destination and source                                  |
-| empf   | emplaces a function to the front of a function given a destination name and source                            |
-| empb   | emplaces a function to the back of a function given a destination name and source                             |
+| enqf   | enqueues a unary function to the front of a unary function given a destination and source                     |
+| enqb   | enqueues a unary function to the back of a unary function given a destination and source                                  |
+| empf   | emplaces a unary function to the front of a unary function given a destination name and source                            |
+| empb   | emplaces a unary function to the back of a unary function given a destination name and source                             |
 | td     | defines a typed function given a function and a type list                                                     |
 | tdws   | defines a typed function given a function and a sample argument list                                          |
 | ts     | switch an argument on type and apply the first match given a function list, type list list, and argument list |
