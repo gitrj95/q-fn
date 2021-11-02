@@ -7,10 +7,10 @@
   - eg computing the arity of a function is surprisingly complicated in q to solve in
     a general sense
   - eg it is tricky to dynamically construct projections 
-- the ability to treat a function as a deque that behaves as a single composite
-  on application is useful in practice
+- the ability to treat a sequence of functions as a deque that behaves
+  as a single composite on application is useful in practice
 - dynamic typing can be undesirable in cases whereby semantic errors are not
-  evidenced by 'type
+  evidenced by ~'type~
   - eg want to declare that a function only accepts arguments of a certain type
   - eg want to be able to switch on type and apply matching functions
 - etc
@@ -22,9 +22,9 @@
 | proj   | constructs a projection given a function, indices, and arguments                                              |
 | projwr | constructs a projection given a function, its rank, indices, and arguments                                    |
 | enqf   | enqueues a unary function to the front of a unary function given a destination and source                     |
-| enqb   | enqueues a unary function to the back of a unary function given a destination and source                                  |
-| empf   | emplaces a unary function to the front of a unary function given a destination name and source                            |
-| empb   | emplaces a unary function to the back of a unary function given a destination name and source                             |
+| enqb   | enqueues a unary function to the back of a unary function given a destination and source                      |
+| empf   | emplaces a unary function to the front of a unary function given a destination name and source                |
+| empb   | emplaces a unary function to the back of a unary function given a destination name and source                 |
 | td     | defines a typed function given a function and a type list                                                     |
 | tdws   | defines a typed function given a function and a sample argument list                                          |
 | ts     | switch an argument on type and apply the first match given a function list, type list list, and argument list |
@@ -51,10 +51,29 @@ q)/ it assigns the undefined arity of enlist to 0N, by convention
 q).fn.rnk['[{};enlist]]
 0N
 
-q)/ and more
+q)/ adverbs are of no concern
+q).fn.rnk[{z}[;;::]/]
+1
 #+end_example
 #+begin_example
-q)
+q)/ proj takes a [<function>;<indices>;<arguments>]
+q).fn.proj[{z};0 2;10 11]
+{z}[10;;11]
+
+q)/ proj uses rnk to calculate arity--slow at times
+q)/ projwr takes a [<function>;<rank>;<indices>;<arguments>]
+q)/ specifying rank obviates need for reflection
+q).fn.projwr[{z};3;0 2;10 11]
+{z}[10;;11]
+q)/ so, if you know before run-time, use this
+
+q)/ enqf and enqb take a [<unary>;<unary>]
+q)/ the "back" of a function executes first, ie enqb[f(g(x));h(x)] -> f(g(h(x)))
+q)/ why not ('[;])? besides its unfriendly syntax, compose does not check arity
+q)/ results of functions may be projections, resulting in potentially
+q)/ undesirable behavior. other times, it may be exactly what you want!
+q).fn.enqb/[(string;last;first)](1 2;3 4)
+,"2"
+q)/ like proj, enqf/enqb use rnk. build your functions before run-time
 #+end_example
 * pitfalls
-
