@@ -18,7 +18,7 @@
 ** functions
 | name   | description                                                                                                   |
 |--------+---------------------------------------------------------------------------------------------------------------|
-| rnk    | determines the rank of a function given a function                                                            |
+| rnk    | determines the rank (arity) of a function given a function                                                    |
 | proj   | constructs a projection given a function, indices, and arguments                                              |
 | projwr | constructs a projection given a function, its rank, indices, and arguments                                    |
 | enqf   | enqueues a function to the front of a function given a destination and source                                 |
@@ -30,5 +30,31 @@
 | ts     | switch an argument on type and apply the first match given a function list, type list list, and argument list |
 | tswf   | switch an argument on type and apply all matches given a function list, type list list, and argument list     |
 * examples
+#+begin_example
+q)/ .fn.rnk takes a [<function>]
+q).fn.rnk{z}
+3
+
+q)/ it deals with composites and projections
+q).fn.rnk['[upper;string]]
+1
+q).fn.rnk[upper string@]
+1
+
+q)/ it disambiguates between elisions and (::) literals
+q).fn.rnk[{(y;z)}[;::]]
+2
+q).fn.rnk[{(y;z)}[;]]
+3
+
+q)/ it assigns the undefined arity of enlist to 0N, by convention
+q).fn.rnk['[{};enlist]]
+0N
+
+q)/ and more
+#+end_example
+#+begin_example
+q)
+#+end_example
 * pitfalls
 
