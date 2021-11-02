@@ -1,28 +1,34 @@
 #+title:q-fn
 #+author:rj
 
-/IN PROGRESS, UNSTABLE/
 * motivation
-- repeated idioms
-- higher-order function tooling
-- ...
+- there exist repeated, higher-order idioms that are not trivially derived from
+  stock adverbs
+  - eg computing the arity of a function is surprisingly complicated in q to solve in
+    a general sense
+  - eg it is tricky to dynamically construct projections 
+- the ability to treat a function as a deque that behaves as a single composite
+  on application is useful in practice
+- dynamic typing can be undesirable in cases whereby semantic errors are not
+  evidenced by 'type
+  - eg want to declare that a function only accepts arguments of a certain type
+  - eg want to be able to switch on type and apply matching functions
+- etc
 * interface
-** configuration
 ** functions
-| name   | description                                     |
-|--------+-------------------------------------------------|
-| rnk    | determines the rank of a function               |
-| proj   | dynamically constructs a projection             |
-| projwr | dynamically constructs a projection with a rank |
-| enqf   | enqueues a function to the front of a function  |
-| enqb   | enqueues a function to the back of a function   |
-| empf   | emplaces a function to the front of a function  |
-| empb   | emplaces a function to the back of a function   |
-| td     | a typed function declaration                    |
-| tdws   | a typed function declaration with a sample      |
-| ts     | type switch                                     |
-| tswf   | type switch with fallthrough                    |
-...
+| name   | description                                                                                                   |
+|--------+---------------------------------------------------------------------------------------------------------------|
+| rnk    | determines the rank of a function given a function                                                            |
+| proj   | constructs a projection given a function, indices, and arguments                                              |
+| projwr | constructs a projection given a function, its rank, indices, and arguments                                    |
+| enqf   | enqueues a function to the front of a function given a destination and source                                 |
+| enqb   | enqueues a function to the back of a function given a destination and source                                  |
+| empf   | emplaces a function to the front of a function given a destination name and source                            |
+| empb   | emplaces a function to the back of a function given a destination name and source                             |
+| td     | defines a typed function given a function and a type list                                                     |
+| tdws   | defines a typed function given a function and a sample argument list                                          |
+| ts     | switch an argument on type and apply the first match given a function list, type list list, and argument list |
+| tswf   | switch an argument on type and apply all matches given a function list, type list list, and argument list     |
+* examples
 * pitfalls
-absurd complexity of determining arity through reflection in q -> slow
-...
+

@@ -11,7 +11,7 @@ rnk:{$[100=@x;#(. x)1;(@x)in 101 103h;$[enlist~x;0N;1];(@x)in 102 109 110 111h;2
 proj:{[f;ix;a]f .@[rnk[f]#pt;ix;:;a]};projwr:{[f;r;ix;a]f .@[r#pt;ix;:;a]}
 enqf:enq 1b;enqb:enq 0b
 empf:emp 1b;empb:emp 0b
-td:{enqb[enlist]{if[~y~ty z;'`type];x . z}[x;y]};tdws:{td[x;ty y]}
+td:{enqf[enlist]{if[~y~ty z;'`type];x . z}[x;y]};tdws:{td[x;ty y]}
 ts:{tz:ty z;while[~(#y)&z~*y;x_:0;y_:0];(*x). z}
 tswf:{(x@&y~\:ty z).\: z}
 
