@@ -10,7 +10,7 @@
 - the ability to treat a sequence of functions as a deque that behaves
   as a single composite on application is useful in practice
 - dynamic typing can be undesirable in cases whereby semantic errors are not
-  evidenced by ~'type~
+  evidenced by ='type=
   - eg want to declare that a function only accepts arguments of a certain type
   - eg want to be able to switch on type and apply matching functions
 - etc
@@ -60,12 +60,10 @@ q)/ proj takes a [<function>;<indices>;<arguments>]
 q).fn.proj[{z};0 2;10 11]
 {z}[10;;11]
 
-q)/ proj uses rnk to calculate arity--slow at times
 q)/ projwr takes a [<function>;<rank>;<indices>;<arguments>]
 q)/ specifying rank obviates need for reflection
 q).fn.projwr[{z};3;0 2;10 11]
 {z}[10;;11]
-q)/ so, if you know before run-time, use this
 
 q)/ enqf and enqb take a [<unary>;<unary>]
 q)/ the "back" of a function executes first, ie enqb[f(g(x));h(x)] -> f(g(h(x)))
@@ -74,6 +72,12 @@ q)/ results of functions may be projections, resulting in potentially
 q)/ undesirable behavior. other times, it may be exactly what you want!
 q).fn.enqb/[(string;last;first)](1 2;3 4)
 ,"2"
-q)/ like proj, enqf/enqb use rnk. build your functions before run-time
+
+q)/ empf and empb behave like their enqueue analogs, but they mutate the
+q)/ destination in-place
+q)x:upper;.fn.empb[`x;string]
+`x
+q)x`hello
+"HELLO"
 #+end_example
 * pitfalls
