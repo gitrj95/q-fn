@@ -13,7 +13,7 @@ enqf:enq 1b;enqb:enq 0b
 empf:emp 1b;empb:emp 0b
 
 ty:{$[@x;@x;.z.s'x]}
-td:{if[^r:rnk x;'`enlist];$[~r-:1;'[x;{if[~x~ty y;'`type];y}y];'[{if[~y~ty'z;'`type];x . z}[x;y];."enlist[",(r#";"),"]"]]}
+td:{if[^r:rnk x;'`enlist];$[~r-:1;'[x;{if[~x~ty y;'`type];y}y];'[{if[~y~ty'z;'`type];x . z}[x;y];enlist]]}
 ts:{tz:ty z;while[~(#y)&z~*y;x_:0;y_:0];(*x). z};tswf:{(x@&y~\:ty z).\: z}
 
 wha:wh[&];who:wh[|]
