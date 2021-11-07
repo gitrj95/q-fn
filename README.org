@@ -53,6 +53,7 @@ q).fn.rnk[{(y;z)}[;]]
 
 q)/ it assigns the arity of enlist to 0N, by convention
 q).fn.rnk[enlist]
+0N
 q)enlist[1;2;3]
 1 2 3
 q)enlist[1;2;3;4;5]
@@ -120,6 +121,17 @@ q)/ unary functions minted with td, of course, may be enqueued or emplaced
 q).fn.enqb[max;.fn.td[{where 0=mod[x;2]};99h]]17 8 9!0 1 2
 17
 
-q)/ ...
+q)/ ts takes a [<function list>;<ty tree list>;<argument list>]
+q).fn.ts[({10};{11};{12});enlist each -7 -9 -7h;enlist 1]
+10
+q)/ notice how only the 1st function is applied
+
+q)/ no matches is equivalent to a blank statement 
+q).fn.ts[({10};{11};{12});enlist each -9 -9 -9h;enlist 1]
+q)
+
+q)/ tswf behaves like ts, but it applies all matched functions
+q).fn.tswf[({10};{11};{12});enlist each -7 -9 -7h;enlist 1]
+10 12
 #+end_example
 * pitfalls
