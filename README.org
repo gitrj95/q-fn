@@ -9,8 +9,8 @@
   - eg it is tricky to dynamically construct projections
 - the ability to treat a sequence of functions as a deque that behaves
   as a single composite on application is useful
-- dynamic typing can be undesirable in cases whereby semantic errors are not
-  evidenced 
+- dynamic typing can be undesirable in cases whereby the grammar is well-defined
+  but does not follow the desired semantics
   - eg want to declare that a function only accepts arguments of a certain type
   - eg want to be able to switch on type and apply matching functions
 - cascading where semantics, akin to those in qsql, are useful generally
@@ -72,14 +72,14 @@ q).fn.proj[{z};0 2;10 11]
 {z}[10;;11]
 
 q)/ projwr takes a [<function>;<rank>;<indices>;<arguments>]
-q)/ specifying rank obviates need for runtime reflection
+q)/ specifying rank obviates the need for runtime reflection
 q).fn.projwr[{z};3;0 2;10 11]
 {z}[10;;11]
 
 q)/ enqf and enqb take a [<unary>;<unary>]
 q)/ the "back" of a function executes first, ie enqb[f(g(x));h(x)] -> f(g(h(x)))
 q)/ why not '[...]? compose does not check arity on its own. we want the deque
-q)/ to execute at once
+q)/ to execute wholly
 q).fn.enqb/[(string;last;first)](1 2;3 4)
 ,"2"
 
@@ -134,4 +134,26 @@ q)/ tswf behaves like ts, but it applies all matched functions
 q).fn.tswf[({10};{11};{12});enlist each -7 -9 -7h;enlist 1]
 10 12
 #+end_example
+#+begin_example
+q)/ wa takes a [<masks>;<list>], st <mask> := function that returns a boolean
+q)/ list of the same arity as <list>
+q)/ it returns the indices where all masks hold true
+q).fn.wa[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+0 2
+
+q)/ wo takes the same arguments and has the same <mask> definition, but it
+q)/ returns the indices where at least one mask holds true
+q).fn.wo[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+0 2 3 4
+
+q)/ atwa takes the same arguments and has the same <mask> definition, but it
+q)/ indexes <list> by the results wa would produce
+q).fn.atwa[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+102 408
+
+q)/ and likewise for atwo wrt wo
+q).fn.atwo[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+102 408 6 28
+#+end_example
 * pitfalls
+...
