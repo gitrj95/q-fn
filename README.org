@@ -136,7 +136,7 @@ q).fn.tswf[({10};{11};{12});enlist each -7 -9 -7h;enlist 1]
 #+end_example
 #+begin_example
 q)/ .fn.wa takes a [<masks>;<list>], st <mask> := function that returns a boolean
-q)/ list of the same arity as <list>
+q)/ vector of the same size as <list>
 q)/ it returns the indices where all masks hold true
 q).fn.wa[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
 0 2
@@ -164,4 +164,11 @@ q)/ for .fn.rnk, .fn.enq[fb], .fn.emp[fb], and .fn.td--where possible
 
 q)/ wrt .fn.proj, if you know the rank at "compile"-time, there is no reason to
 q)/ use .fn.proj; use .fn.projwr
+#+end_example
+#+begin_example
+q)/ .fn.pt and .fn.rnkp are not configuration. do not change these!
+q).fn.pt:(::)
+q).fn.proj[{};0 2;10 11]
+11
+q)/ nonsense result
 #+end_example
