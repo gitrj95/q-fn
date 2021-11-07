@@ -6,29 +6,33 @@
   stock adverbs
   - eg computing the arity of a function is surprisingly complicated in q to solve in
     a general sense
-  - eg it is tricky to dynamically construct projections 
+  - eg it is tricky to dynamically construct projections
 - the ability to treat a sequence of functions as a deque that behaves
-  as a single composite on application is useful in practice
+  as a single composite on application is useful
 - dynamic typing can be undesirable in cases whereby semantic errors are not
-  evidenced by ='type=
+  evidenced 
   - eg want to declare that a function only accepts arguments of a certain type
   - eg want to be able to switch on type and apply matching functions
-- etc
+- cascading where semantics, akin to those in qsql, are useful generally
 * interface
 ** functions
-| name   | description                                                                                                   |
-|--------+---------------------------------------------------------------------------------------------------------------|
-| rnk    | determines the rank (arity) of a function given a function                                                    |
-| proj   | constructs a projection given a function, indices, and arguments                                              |
-| projwr | constructs a projection given a function, its rank, indices, and arguments                                    |
-| enqf   | enqueues a unary function to the front of a unary function given a destination and source                     |
-| enqb   | enqueues a unary function to the back of a unary function given a destination and source                      |
-| empf   | emplaces a unary function to the front of a unary function given a destination name and source                |
-| empb   | emplaces a unary function to the back of a unary function given a destination name and source                 |
-| td     | defines a typed function given a function and a type list                                                     |
-| tdws   | defines a typed function given a function and a sample argument list                                          |
-| ts     | switch an argument on type and apply the first match given a function list, type list list, and argument list |
-| tswf   | switch an argument on type and apply all matches given a function list, type list list, and argument list     |
+| name   | description                                                                                                                         |
+|--------+-------------------------------------------------------------------------------------------------------------------------------------|
+| rnk    | determines the rank (arity) of a function given a function                                                                          |
+| proj   | constructs a projection given a function, indices, and arguments                                                                    |
+| projwr | constructs a projection given a function, its rank, indices, and arguments                                                          |
+| enqf   | enqueues a unary function to the front of a unary function given a destination and source                                           |
+| enqb   | enqueues a unary function to the back of a unary function given a destination and source                                            |
+| empf   | emplaces a unary function to the front of a unary function given a destination name and source                                      |
+| empb   | emplaces a unary function to the back of a unary function given a destination name and source                                       |
+| ty     | computes the recursive type given arbitrary k data                                                                                  |
+| td     | defines a typed function given a function and a type list                                                                           |
+| ts     | switch an argument on type and apply the first match given a function list, type list list, and argument list                       |
+| tswf   | switch an argument on type and apply all matches given a function list, type list list, and argument list                           |
+| wa     | finds the indices where a set of masks all hold true against a list given a set of mask functions and target list                   |
+| atwa   | reduces a list to the elements whereby a set of masks all hold true given a set of mask functions and target list                   |
+| wo     | finds the indices where a set of masks hold true for at least one mask given a set of mask functions and target list                |
+| atwo   | reduces a list to the elements whereby a set of masks hold true for at least one mask given a set of mask functions and target list |
 * examples
 #+begin_example
 q)/ .fn.rnk takes a [<function>]
@@ -47,13 +51,19 @@ q).fn.rnk[{(y;z)}[;::]]
 q).fn.rnk[{(y;z)}[;]]
 3
 
-q)/ it assigns the undefined arity of enlist to 0N, by convention
-q).fn.rnk['[{};enlist]]
-0N
+q)/ it assigns the arity of enlist to 0N, by convention
+q).fn.rnk[enlist]
+q)enlist[1;2;3]
+1 2 3
+q)enlist[1;2;3;4;5]
+1 2 3 4 5
+q)/ clearly, its arity is undefined
 
 q)/ adverbs are of no concern
 q).fn.rnk[{z}[;;::]/]
 1
+q).fn.rnk[+':]
+2
 #+end_example
 #+begin_example
 q)/ proj takes a [<function>;<indices>;<arguments>]
@@ -61,23 +71,55 @@ q).fn.proj[{z};0 2;10 11]
 {z}[10;;11]
 
 q)/ projwr takes a [<function>;<rank>;<indices>;<arguments>]
-q)/ specifying rank obviates need for reflection
+q)/ specifying rank obviates need for runtime reflection
 q).fn.projwr[{z};3;0 2;10 11]
 {z}[10;;11]
 
 q)/ enqf and enqb take a [<unary>;<unary>]
 q)/ the "back" of a function executes first, ie enqb[f(g(x));h(x)] -> f(g(h(x)))
-q)/ why not ('[;])? besides its unfriendly syntax, compose does not check arity
-q)/ results of functions may be projections, resulting in potentially
-q)/ undesirable behavior. other times, it may be exactly what you want!
+q)/ why not '[...]? compose does not check arity on its own. we want the deque
+q)/ to execute at once
 q).fn.enqb/[(string;last;first)](1 2;3 4)
 ,"2"
 
+q)/ empf and empb take a [<symbol>;<symbol>|<function>]
 q)/ empf and empb behave like their enqueue analogs, but they mutate the
 q)/ destination in-place
 q)x:upper;.fn.empb[`x;string]
 `x
 q)x`hello
 "HELLO"
+#+end_example
+#+begin_example
+q)/ ty takes a [<any>]
+q)/ it returns its "recursive type" as used by other functions in this library
+q).fn.ty[(4;1.;`a`b`c;(();()))]
+-7h
+-9h
+11h
+(();())
+q)/ we recursively resolve all mixed lists to their typed constituents--except
+q)/ (), which remains the same
+
+q)/ td takes a [<function>;<ty tree>]
+q)/ it mints a function that will fail with 'type if the argument fails to meet
+q)/ the <ty tree>
+q)f:.fn.td[+;-9 7h]
+q)f[1.;til 10]
+1 2 3 4 5 6 7 8 9 10f
+q)f[1;til 10]
+'type
+
+q)/ if you're unsure what the <ty tree> is, just supply a sample argument list
+q)/ to ty
+q)g:.fn.td[{$[x>0;2*y;neg z]};.fn.ty(10;.z.p;-7)]
+q)g[1;"p"$2021.01.01;2]
+2042.01.02D00:00:00.000000000
+
+q)/ unary functions minted with td, of course, may be enqueued or emplaced
+q).fn.enqb[max;.fn.td[{where 0=mod[x;2]};99h]]17 8 9!0 1 2
+17
+
+q)/ ...
 #+end_example
 * pitfalls
