@@ -157,13 +157,15 @@ q).fn.atwo[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
 #+end_example
 * pitfalls
 #+begin_example
-q)/ the completeness of .fn.rnk comes at the cost of pricey scoping gynmastics.
+q)/ the completeness of .fn.rnk comes at the cost of pricey scoping gymnastics.
 q)/ to my knowledge, there is no other way to generally compute arity by
-q)/ reflection in q. ergo, try to move the cost from run-time to "compile"-time
-q)/ for .fn.rnk, .fn.enq[fb], .fn.emp[fb], and .fn.td--where possible
-
+q)/ reflection in q. ergo, try to move the cost from run-time to "compile"-time,
+q)/ unless you're in the debugger
+#+end_example
+#+begin_example
 q)/ wrt .fn.proj, if you know the rank at "compile"-time, there is no reason to
 q)/ use .fn.proj; use .fn.projwr
+q)f:{z+3*y|x};g:.fn.projwr[f;3;2;100]
 #+end_example
 #+begin_example
 q)/ .fn.pt and .fn.rnkp are not configuration. do not change these!
