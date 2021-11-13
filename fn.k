@@ -2,7 +2,7 @@
 pt:(.{}[;])1;rnkp:()
 enq:{[f;x;y]if[1b in(^r),1<r:rnk':(x;y);'`type];$[f;'[y;x];'[x;y]]}
 emp:{[f;x;y]if[~-11=@x;'`type];if[-11=@y;y:. y];fx:. x;.[x;();:;enq[f;fx;y]]}
-w1:{y,:();&x/y@\:z};w2:{m:(*y)z;&$[1=#y;m;{w:&x[0]y;@[y;w;:;z x[1]w]}[(x;z)]/[m;y_:0]]}
+w:{y,:();&x/y@\:z};pw:{y,:();&x/{y x}[z]':y};w1:{m:(*y)z;&$[1=#y;m;{w:&x[0]y;@[y;w;:;z x[1]w]}[(x;z)]/[m;y_:0]]}
 
 rnk:{$[100=@x;#(. x)1;(@x)in 101 103h;$[enlist~x;0N;1];(@x)in 102 109 110 111h;2;104=@x;[rnkp::. x
    $[(tw:2=#rnkp)&(@)~rnkp 0;.z.s rnkp 1;tw&(.)~rnkp 0;1;[a:0;ix:1;while[ix<#rnkp;ap:."not 104=type()~.fn.rnkp ",$ix
@@ -16,6 +16,6 @@ ty:{$[@x;@x;.z.s'x]}
 td:{if[^r:rnk x;'`enlist];$[1=r;'[x;{if[~x~ty y;'`type];y}y];'[{if[~y~ty':z;'`type];x . z}[x;y];enlist]]}
 ts:{tz:ty':z;while[(#y)&~tz~*y;x_:0;y_:0];(*x). z};tswf:{(x@&y~\:ty':z).\: z}
 
-wa1:w1[&];wa2:w2[::]
-wo1:w1[|];wo2:w2[~:]
+wa:w[&];pwa:pw[&];wa1:w1[::]
+wo:w[|];pwo:pw[|];wo1:w1[~:]
 

@@ -16,23 +16,25 @@
 - cascading where semantics, akin to those in qsql, are useful generally
 * interface
 ** functions
-| name       | description                                                                                                                         |
-|------------+-------------------------------------------------------------------------------------------------------------------------------------|
-| .fn.rnk    | determines the rank (arity) of a function given a function                                                                          |
-| .fn.proj   | constructs a projection given a function, indices, and arguments                                                                    |
-| .fn.projwr | constructs a projection given a function, its rank, indices, and arguments                                                          |
-| .fn.enqf   | enqueues a unary function to the front of a unary function given a destination and source                                           |
-| .fn.enqb   | enqueues a unary function to the back of a unary function given a destination and source                                            |
-| .fn.empf   | emplaces a unary function to the front of a unary function given a destination name and source                                      |
-| .fn.empb   | emplaces a unary function to the back of a unary function given a destination name and source                                       |
-| .fn.ty     | computes the recursive type given arbitrary k data                                                                                  |
-| .fn.td     | defines a typed function given a function and a type list                                                                           |
-| .fn.ts     | switch an argument on type and apply the first match given a function list, type list list, and argument list                       |
-| .fn.tswf   | switch an argument on type and apply all matches given a function list, type list list, and argument list                           |
-| .fn.wa     | finds the indices where a set of masks all hold true against a list given a set of mask functions and target list                   |
-| .fn.atwa   | reduces a list to the elements whereby a set of masks all hold true given a set of mask functions and target list                   |
-| .fn.wo     | finds the indices where a set of masks hold true for at least one mask given a set of mask functions and target list                |
-| .fn.atwo   | reduces a list to the elements whereby a set of masks hold true for at least one mask given a set of mask functions and target list |
+| name       | description                                                                                                          |
+|------------+----------------------------------------------------------------------------------------------------------------------|
+| .fn.rnk    | determines the rank (arity) of a function given a function                                                           |
+| .fn.proj   | constructs a projection given a function, indices, and arguments                                                     |
+| .fn.projwr | constructs a projection given a function, its rank, indices, and arguments                                           |
+| .fn.enqf   | enqueues a unary function to the front of a unary function given a destination and source                            |
+| .fn.enqb   | enqueues a unary function to the back of a unary function given a destination and source                             |
+| .fn.empf   | emplaces a unary function to the front of a unary function given a destination name and source                       |
+| .fn.empb   | emplaces a unary function to the back of a unary function given a destination name and source                        |
+| .fn.ty     | computes the recursive type given arbitrary k data                                                                   |
+| .fn.td     | defines a typed function given a function and a type list                                                            |
+| .fn.ts     | switch an argument on type and apply the first match given a function list, type list list, and argument list        |
+| .fn.tswf   | switch an argument on type and apply all matches given a function list, type list list, and argument list            |
+| .fn.wa     | finds the indices where a set of masks all hold true against a list given a set of mask functions and target list    |
+| .fn.pwa    | like .fn.wa but allocates threads to each mask application                                                           |
+| .fn.wa1    | like .fn.wa but uses a different algorithm that favors expensive or many masks                                       |
+| .fn.wo     | finds the indices where a set of masks hold true for at least one mask given a set of mask functions and target list |
+| .fn.pwo    | like .fn.wo but allocates threads to each mask application                                                           |
+| .fn.wo1    | like .fn.wo but uses a different algorithm that favors expensive or many masks                                       |
 * examples
 #+begin_example
 q)/ .fn.rnk takes a [<function>]
@@ -140,20 +142,55 @@ q)/ vector of the same size as <list>
 q)/ it returns the indices where all masks hold true
 q).fn.wa[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
 0 2
+q)/ .fn.pwa and .fn.wa1 behaves semantically identically. their use is described
+q)/ later
+q).fn.pwa[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+0 2
+q).fn.wa1[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+0 2
 
 q)/ .fn.wo takes the same arguments and has the same <mask> definition, but it
 q)/ returns the indices where at least one mask holds true
 q).fn.wo[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
 0 2 3 4
+q)/ likewise for .fn.pwo and .fn.wo1
+q).fn.pwo[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+0 2 3 4
+q).fn.wo1[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+0 2 3 4
 
-q)/ .fn.atwa takes the same arguments and has the same <mask> definition, but it
-q)/ indexes <list> by the results wa would produce
-q).fn.atwa[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
-102 408
-
-q)/ and likewise for .fn.atwo wrt .fn.wo
-q).fn.atwo[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
-102 408 6 28
+q)/ .fn.wa and .fn.wb naively apply each mask serially and reduce the conforming
+q)/ boolean vectors, .fn.pwa and .fn.pwb apply each mask in parallel and reduce,
+q)/ and .fn.wa1 and .fn.wo1 apply the (i+1)th mask only where prudent. eg, if
+q)/ mask i is false at index 2, and you're reducing with and, there's no need to
+q)/ compute mask i+1, ... at index 2. this seems straightforward, but q's native
+q)/ simd acceleration and cache treatment can allow primitives with o(n) behavior
+q)/ to function as if they were constant time. the naive approaches in .fn.wa and
+q)/ .fn.wb are therefore the fastest for relatively trivial masks, but you should
+q)/ always measure
+q)\s
+16i
+q)f:(0=mod[;2]@;0=mod[;3]@);x:1000000?10000000
+q)\t:100 .fn.wa[f;x] / 1st
+268
+q)\t:100 .fn.pwa[f;x] / 3rd
+396
+q)\t:100 .fn.wa1[f;x] / 2nd
+311
+q)f:({","~'first each string 17.2<sqrt(x*x div 2)xexp 1.5};0=mod[;6]@)
+q)\t:100 .fn.wa[f;x] / 2nd
+5710
+q)\t:100 .fn.pwa[f;x] / 3rd
+8678
+q)\t:100 .fn.wa1[f;x] / 1st
+5594
+q)f:.fn.proj[{0=x mod y};1]each til 100
+q)\t:10 .fn.wa[f;x] / 2nd
+1233
+q)\t:10 .fn.pwa[f;x] / 3rd
+8672
+q)\t:10 .fn.wa1[f;x] / 1st
+148
 #+end_example
 * pitfalls
 #+begin_example
@@ -174,3 +211,4 @@ q).fn.proj[{};0 2;10 11]
 11
 q)/ nonsense result
 #+end_example
+
