@@ -47,7 +47,7 @@
 | .fn.wo     | finds the indices where a set of masks hold true for at least one mask given a set of mask functions and target list                                                                                   |
 | .fn.pmo    | like .fn.mo but allocates threads to each mask application                                                                                                                                             |
 | .fn.pwo    | like .fn.wo but allocates threads to each mask application                                                                                                                                             |
-| .fn.mo1    | like .fn.mo but uses a different algorithm that favors expensive or many mask                                                                                                                          |
+| .fn.mo1    | like .fn.mo but uses a different algorithm that favors expensive or many masks                                                                                                                         |
 | .fn.wo1    | like .fn.wo but uses a different algorithm that favors expensive or many masks                                                                                                                         |
 | .fn.ie     | (1) applies a function to the indices where a mask is true (2) applies a separate function to the indices where the same mask is false given a mask, target list, truthy function, and falsey function |
 | .fn.ie1    | like .fn.ie but uses a different algorithm that favors expensive truthy and falsey functions                                                                                                           |
@@ -151,6 +151,12 @@ q)/ it returns its constituents in the order they execute
 q).fn.dcmp('[{1};{2}])
 {2}
 {1}
+
+q)/ it recursively decomposes as needed
+q).fn.dcmp('['[{10};{z}11];{12}])
+{12}
+{z}[11]
+{10}
 
 q)/ .fn.enqf and .fn.enqb take a [<unary>;<unary>]
 q)/ the "back" of a function executes first, ie .fn.enqb[f(g(x));h(x)] -> f(g(h(x)))

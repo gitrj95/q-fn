@@ -13,10 +13,10 @@ proj:{[f;ix;a]f .@[rnk[f]#pt;ix;:;a]};projwr:{[f;r;ix;a]f .@[r#pt;ix;:;a]}
 dcmp:td[{$[105=@x;.z.s[vx 1],.z.s(vx:. x)0;99<@x;x]};105h]
 enq:{[f;x;y]if[1b in(^r),1<r:rnk'(x;y);'`type];$[f;'[y;x];'[x;y]]}
 emp:{[f;x;y]if[b:dp x;dx:. x];if[-11=@y;if[~99<@y:. y;'`type]];.[x;();:;$[b;enq[f;dx;y];y]]}
-pop:{[f;x]dx:. x;$[105=@dx;fx:dcmp dx;'`type];cfx:$[f;(0;-1+#fx)_fx;|0 1_fx];.[x;();:;enqf/cfx 0];*cfx 1}
+pop:{[f;x]dx:. x;$[105=@dx;fx:dcmp dx;'`type];cfx:$[f;(0;-1+#fx)_;|0 1_]fx;.[x;();:;enqf/cfx 0];cfx[1;0]}
 
-enqf:enq 1b;empf:emp 1b;popf:td[pop 1b;-11h]
-enqb:enq 0b;empb:emp 0b;popb:td[pop 0b;-11h]
+enqf:enq 1b;empf:emp 1b;popf:td[pop 1b;ty`]
+enqb:enq 0b;empb:emp 0b;popb:td[pop 0b;ty`]
 
 m:{y,:();x/y@\:z};pm:{y,:();x/{y x}[z]':y};m1:{m:(*y)z;$[1=#y;m;{w:&x[0]y;@[y;w;:;z x[1]w]}[(x;z)]/[m;y_:0]]}
 
