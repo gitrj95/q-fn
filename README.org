@@ -7,34 +7,51 @@
   - eg computing the arity of a function is surprisingly complicated in q to solve in
     a general sense
   - eg it is tricky to dynamically construct projections
-- the ability to treat a sequence of functions as a deque that behaves
-  as a single composite on application is useful
+  - etc
 - dynamic typing can be undesirable in cases whereby the grammar is well-defined
   but does not follow the desired semantics
   - eg want to declare that a function only accepts arguments of a certain type
   - eg want to be able to switch on type and apply matching functions
+  - etc
+- the ability to treat a sequence of functions as a deque that behaves
+  as a single composite on application is useful
 - cascading where semantics, akin to those in qsql, are useful generally
+- etc
+
 * interface
 ** functions
-| name       | description                                                                                                          |
-|------------+----------------------------------------------------------------------------------------------------------------------|
-| .fn.rnk    | determines the rank (arity) of a function given a function                                                           |
-| .fn.proj   | constructs a projection given a function, indices, and arguments                                                     |
-| .fn.projwr | constructs a projection given a function, its rank, indices, and arguments                                           |
-| .fn.enqf   | enqueues a unary function to the front of a unary function given a destination and source                            |
-| .fn.enqb   | enqueues a unary function to the back of a unary function given a destination and source                             |
-| .fn.empf   | emplaces a unary function to the front of a unary function given a destination name and source                       |
-| .fn.empb   | emplaces a unary function to the back of a unary function given a destination name and source                        |
-| .fn.ty     | computes the recursive type given arbitrary k data                                                                   |
-| .fn.td     | defines a typed function given a function and a type list                                                            |
-| .fn.ts     | switch an argument on type and apply the first match given a function list, type list list, and argument list        |
-| .fn.tswf   | switch an argument on type and apply all matches given a function list, type list list, and argument list            |
-| .fn.wa     | finds the indices where a set of masks all hold true against a list given a set of mask functions and target list    |
-| .fn.pwa    | like .fn.wa but allocates threads to each mask application                                                           |
-| .fn.wa1    | like .fn.wa but uses a different algorithm that favors expensive or many masks                                       |
-| .fn.wo     | finds the indices where a set of masks hold true for at least one mask given a set of mask functions and target list |
-| .fn.pwo    | like .fn.wo but allocates threads to each mask application                                                           |
-| .fn.wo1    | like .fn.wo but uses a different algorithm that favors expensive or many masks                                       |
+| name       | description                                                                                                                                                                                            |
+|------------+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| .fn.rnk    | determines the rank (arity) of a function given a function                                                                                                                                             |
+| .fn.ty     | computes the recursive type given arbitrary k data                                                                                                                                                     |
+| .fn.td     | defines a typed function given a function and a type list                                                                                                                                              |
+| .fn.ts     | switch an argument on type and apply the first match given a function list, type list list, and argument list                                                                                          |
+| .fn.tswf   | switch an argument on type and apply all matches given a function list, type list list, and argument list                                                                                              |
+| .fn.dp     | checks whether a name is defined given a symbol                                                                                                                                                        |
+| .fn.proj   | constructs a projection given a function, indices, and arguments                                                                                                                                       |
+| .fn.projwr | constructs a projection given a function, its rank, indices, and arguments                                                                                                                             |
+| .fn.dcmp   | decomposes a function into its ordered constituents given a composite function                                                                                                                         |
+| .fn.enqf   | enqueues a unary function to the front of a unary function given a destination and source                                                                                                              |
+| .fn.empf   | emplaces a unary function to the front of a unary function given a destination name and source                                                                                                         |
+| .fn.popf   | pops a unary function from the front of a composite unary function given a name                                                                                                                        |
+| .fn.enqb   | enqueues a unary function to the back of a unary function given a destination and source                                                                                                               |
+| .fn.empb   | emplaces a unary function to the back of a unary function given a destination name and source                                                                                                          |
+| .fn.popb   | pops a unary function from the back of a composite unary function given a name                                                                                                                         |
+| .fn.ma     | applies a set of masks to a list finding where they all hold true given a set of mask functions and target list                                                                                        |
+| .fn.wa     | finds the indices where a set of masks all hold true against a list given a set of mask functions and target list                                                                                      |
+| .fn.pma    | like .fn.ma but allocates threads to each mask application                                                                                                                                             |
+| .fn.pwa    | like .fn.wa but allocates threads to each mask application                                                                                                                                             |
+| .fn.ma1    | like .fn.ma but uses a different algorithm that favors expensive or many masks                                                                                                                         |
+| .fn.wa1    | like .fn.wa but uses a different algorithm that favors expensive or many masks                                                                                                                         |
+| .fn.mo     | applies a set of masks to a list finding where at least one holds true given a set of mask functions and target list                                                                                   |
+| .fn.wo     | finds the indices where a set of masks hold true for at least one mask given a set of mask functions and target list                                                                                   |
+| .fn.pmo    | like .fn.mo but allocates threads to each mask application                                                                                                                                             |
+| .fn.pwo    | like .fn.wo but allocates threads to each mask application                                                                                                                                             |
+| .fn.mo1    | like .fn.mo but uses a different algorithm that favors expensive or many mask                                                                                                                          |
+| .fn.wo1    | like .fn.wo but uses a different algorithm that favors expensive or many masks                                                                                                                         |
+| .fn.ie     | (1) applies a function to the indices where a mask is true (2) applies a separate function to the indices where the same mask is false given a mask, target list, truthy function, and falsey function |
+| .fn.ie1    | like .fn.ie but uses a different algorithm that favors expensive truthy and falsey functions                                                                                                           |
+
 * examples
 #+begin_example
 q)/ .fn.rnk takes a [<function>]
@@ -68,31 +85,7 @@ q).fn.rnk[{z}[;;::]/]
 q).fn.rnk[+':]
 2
 #+end_example
-#+begin_example
-q)/ .fn.proj takes a [<function>;<indices>;<arguments>]
-q).fn.proj[{z};0 2;10 11]
-{z}[10;;11]
 
-q)/ .fn.projwr takes a [<function>;<rank>;<indices>;<arguments>]
-q)/ specifying rank obviates the need for run-time reflection
-q).fn.projwr[{z};3;0 2;10 11]
-{z}[10;;11]
-
-q)/ .fn.enqf and .fn.enqb take a [<unary>;<unary>]
-q)/ the "back" of a function executes first, ie .fn.enqb[f(g(x));h(x)] -> f(g(h(x)))
-q)/ why not '[...]? compose does not check arity on its own. we want the deque
-q)/ to execute wholly
-q).fn.enqb/[(string;last;first)](1 2;3 4)
-,"2"
-
-q)/ .fn.empf and .fn.empb take a [<symbol>;<symbol>|<function>]
-q)/ .fn.empf and .fn.empb behave like their enqueue analogs, but they mutate the
-q)/ destination in-place
-q)x:upper;.fn.empb[`x;string]
-`x
-q)x`hello
-"HELLO"
-#+end_example
 #+begin_example
 q)/ .fn.ty takes a [<any>]
 q)/ it returns its "recursive type" as used by other functions in this library
@@ -118,7 +111,6 @@ q)/ to .fn.ty
 q)g:.fn.td[{$[x>0;2*y;neg z]};.fn.ty(10;.z.p;-7)]
 q)g[1;"p"$2021.01.01;2]
 2042.01.02D00:00:00.000000000
-
 q)/ unary functions minted with .fn.td, of course, may be enqueued or emplaced
 q).fn.enqb[max;.fn.td[{where 0=mod[x;2]};99h]]17 8 9!0 1 2
 17
@@ -135,33 +127,102 @@ q)
 q)/ .fn.tswf behaves like .fn.ts, but it applies all matched functions
 q).fn.tswf[({10};{11};{12});enlist each -7 -9 -7h;enlist 1]
 10 12
+
+q)/ .fn.dp takes a [<symbol>]
+q)/ it's a definition predicate--given some indirection
+q).fn.dp`.fn.tswf
+1b
+q)y:10;delete x from`.;.fn.dp each`x`y
+01b
 #+end_example
+
 #+begin_example
-q)/ .fn.wa takes a [<masks>;<list>], st <mask> := function that returns a boolean
+q)/ .fn.proj takes a [<function>;<indices>;<arguments>]
+q).fn.proj[{z};0 2;10 11]
+{z}[10;;11]
+
+q)/ .fn.projwr takes a [<function>;<rank>;<indices>;<arguments>]
+q)/ specifying rank obviates the need for run-time reflection
+q).fn.projwr[{z};3;0 2;10 11]
+{z}[10;;11]
+
+q)/ .fn.dcmp takes a [<composite>]
+q)/ it returns its constituents in the order they execute
+q).fn.dcmp('[{1};{2}])
+{2}
+{1}
+
+q)/ .fn.enqf and .fn.enqb take a [<unary>;<unary>]
+q)/ the "back" of a function executes first, ie .fn.enqb[f(g(x));h(x)] -> f(g(h(x)))
+q)/ why not '[...]? compose does not check arity on its own. we want the deque
+q)/ to execute wholly
+q).fn.enqb/[(string;last;first)](1 2;3 4)
+,"2"
+
+q)/ .fn.empf and .fn.empb take a [<symbol>;<symbol>|<function>]
+q)/ .fn.empf and .fn.empb behave like their enqueue analogs, but they mutate the
+q)/ destination in-place
+q)x:upper;.fn.empb[`x;string]
+`x
+q)x`hello
+"HELLO"
+
+q)/ .fn.popf and .fn.popb take a [<symbol>]
+q)/ they pop the "front" and "back" functions, respectively, off a composite
+q)f:.fn.enqb/[(string;last;first)];.fn.popf`f
+$:
+q)f
+last*:
+q).fn.popb`f
+*:
+q)f
+last
+#+end_example
+
+#+begin_example
+q)/ .fn.ma takes a [<masks>;<list>], st <mask> := function that returns a boolean
 q)/ vector of the same size as <list>
-q)/ it returns the indices where all masks hold true
+q)/ it returns a cumulative mask where all masks hold true
+q).fn.ma[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+10100b
+q)/ .fn.wa takes a [<masks>;<list>]
+q)/ it applies where directly to the mask produced by .fn.ma
 q).fn.wa[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
 0 2
-q)/ .fn.pwa and .fn.wa1 behaves semantically identically. their use is described
-q)/ later
+
+q)/ (.fn.pma, .fn.pwa) and (.fn.ma1, .fn.wa1) behave semantically as above
+q)/ their use is described later
+q).fn.pma[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+10100b
 q).fn.pwa[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
 0 2
+q).fn.ma1[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+10100b
 q).fn.wa1[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
 0 2
 
-q)/ .fn.wo takes the same arguments and has the same <mask> definition, but it
-q)/ returns the indices where at least one mask holds true
-q).fn.wo[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+q)/ .fn.mo takes the same arguments and has the same <mask> definition, but it
+q)/ returns a cumulative mask where at least one mask holds true
+q).fn.mo[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+10111b
+q)/ .fn.wo takes a [<masks>;<list>]
+q)/ it applies where directly to the mask produced by .fn.mo
+q).fn.mo[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
 0 2 3 4
-q)/ likewise for .fn.pwo and .fn.wo1
+
+q)/ likewise for (.fn.pmo, .fn.pwo) and (.fn.mo1, .fn.wo1)
+q).fn.pmo[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+10111b
 q).fn.pwo[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
 0 2 3 4
+q).fn.mo1[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
+10111b
 q).fn.wo1[(0=mod[;2]@;0=mod[;3]@;0=mod[;17]@);102 103 408 6 28]
 0 2 3 4
 
 q)/ .fn.wa and .fn.wb naively apply each mask serially and reduce the conforming
 q)/ boolean vectors, .fn.pwa and .fn.pwb apply each mask in parallel and reduce,
-q)/ and .fn.wa1 and .fn.wo1 apply the (i+1)th mask only where prudent. eg, if
+q)/ and .fn.wa1 and .fn.wo1 apply the (i+j)th mask only where prudent. eg, if
 q)/ mask i is false at index 2, and you're reducing with and, there's no need to
 q)/ compute mask i+1, ... at index 2. this seems straightforward, but q's native
 q)/ simd acceleration and cache treatment can allow primitives with o(n) behavior
@@ -185,30 +246,50 @@ q)\t:100 .fn.pwa[f;x] / 3rd
 q)\t:100 .fn.wa1[f;x] / 1st
 5594
 q)f:.fn.proj[{0=x mod y};1]each til 100
-q)\t:10 .fn.wa[f;x] / 2nd
+q)\t:10 .fn.wa[f;x] / 3rd
 1233
-q)\t:10 .fn.pwa[f;x] / 3rd
-8672
+q)\t:10 .fn.pwa[f;x] / 2nd
+863
 q)\t:10 .fn.wa1[f;x] / 1st
 148
 #+end_example
+
+#+begin_example
+q)/ .fn.ie takes a [<mask>;<list>;<truthy>;<falsey>]
+q)/ it applies <truthy> at the indices where <mask> is true and applies
+q)/ <falsey> where <mask> is false
+q).fn.ie[.fn.ma .fn.proj[{0=x mod y};1]each 2 3;til 20;2*;neg]
+0 -1 -2 -3 -4 -5 12 -7 -8 -9 -10 -11 24 -13 -14 -15 -16 -17 36 -19
+q)/ integers that divide both 2 and 3 have been doubled, and the others had
+q)/ their sign switched
+
+q)/ .fn.ie1 is semantically identical, favoring expensive <truthy> or <falsey>
+q)/ usually, the more vectorized your functions, the stronger .fn.ie will be
+q)x:1000000?10000000
+q)\t .fn.ie[.fn.ma .fn.proj[{0=x mod y};1]each 2 3;x;2*;neg]
+34
+q)\t .fn.ie1[.fn.ma .fn.proj[{0=x mod y};1]each 2 3;x;2*;neg]
+94
+#+end_example
+
 * pitfalls
 #+begin_example
-q)/ the completeness of .fn.rnk comes at the cost of pricey scoping gymnastics.
+q)/ the completeness of .fn.rnk comes at the cost of pricey scoping gymnastics
 q)/ to my knowledge, there is no other way to generally compute arity by
-q)/ reflection in q. ergo, try to move the cost from run-time to "compile"-time,
+q)/ reflection in q. ergo, try to move the cost from run-time to parse-time,
 q)/ unless you're in the debugger
 #+end_example
+
 #+begin_example
-q)/ wrt .fn.proj, if you know the rank at "compile"-time, there is no reason to
+q)/ wrt .fn.proj, if you know the rank at parse-time, there is no reason to
 q)/ use .fn.proj; use .fn.projwr
 q)f:{z+3*y|x};g:.fn.projwr[f;3;2;100]
 #+end_example
+
 #+begin_example
-q)/ .fn.pt and .fn.rnkp are not configuration. do not change these!
+q)/ .fn.pt and .fn.rnkp are not configuration. do not change these
 q).fn.pt:(::)
 q).fn.proj[{};0 2;10 11]
-11
-q)/ nonsense result
+'length
 #+end_example
 
