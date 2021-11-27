@@ -5,7 +5,8 @@ rnk:{$[100=@x;#(. x)1;(@x)in 101 103h;$[enlist~x;0N;1];(@x)in 102 109 110 111h;2
    $[(tw:2=#rnkp)&(@)~rnkp 0;.z.s rnkp 1;tw&(.)~rnkp 0;1;[a:0;ix:1;while[ix<#rnkp;ap:."not 104=type()~.fn.rnkp ",$ix
       a+:ap;ix+:1];(.z.s[rnkp 0]|-1+#rnkp)-a]]];105=@x;.z.s[:/. x];106=@x;.z.s[. x];(@x)in 107 108h;$[2=r:.z.s[. x];1;r];'`type]}
 
-ty:{$[@x;@x;.z.s'x]};td:{if[^r:rnk x;'`enlist];$[1=r;'[x;{if[~x~ty y;'`type];y}y];'[{if[~y~ty'z;'`type];x . z}[x;y];enlist]]}
+ty:{$[@x;@x;.z.s'x]}
+td:{if[^r:rnk x;'`enlist];$[~r-:1;'[x;{if[~x~ty y;'`type];y}y];'[{if[~y~ty'z;'`type];x . z}[x;y];."enlist[",(r#";"),"]"]]}
 ts:{tz:ty'z;while[(#y)&~tz~*y;x_:0;y_:0];(*x). z};tswf:{(x@&y~\:ty'z).\: z}
 dp:td[{0>@!x};ty`]
 
